@@ -38,8 +38,11 @@ The model owner created 3 different models for VGGNet
 ## 🤖 Training
 
 🏷️ Before Starting Training  Check the `HyperParameter` section of `train.py`.
+
 🏷️ Now run the `train.py` and Boom!🤯
+
 🏷️ Training Loss will be calculated in `loss.txt`
+
 ```bash
 python3 train.py
 ```
