@@ -35,16 +35,36 @@ The model owner created 3 different models for VGGNet
         🌼 sunflower
 
 
-## 🤖 Training
+## 🤖 Training VGG11
 
-🏷️ Before Starting Training  Check the `HyperParameter` section of `train.py`.
+🏷️ Before Starting Training  Check the `HyperParameter` section of `train_vgg11.py`.
 
-🏷️ Now run the `train.py` and Boom!🤯
+🏷️ Now run the `train_vgg11.py` and Boom!🤯
 
-🏷️ Training Loss will be calculated in `loss.txt`
+🏷️ Training Loss will be calculated in `loss_vgg11.txt`
+
+🏷️ Model will be saved in the path mentioned in the `HyperParamet` section of the script.
+
+🏷️ The `first conv layer` and `last fully connected layers` of `VGG16` will be taken from trained `VGG11` model. 
 
 ```bash
-python3 train.py
+python3 train_vgg11.py
+```
+
+## 🤖 Training VGG16
+
+🏷️ Before Starting Training  Check the `HyperParameter` section of `train_vgg16.py`.
+
+🏷️ If you are frashly training the model, you have to first Pretrained `VGG11`.
+
+🏷️ Provide the path of the trained `VGG11` model in `vgg_11_path` of `train_vgg16.py`
+
+🏷️ Now run the `train_vgg16.py` and Boom!🤯
+
+🏷️ Training Loss will be calculated in `loss_vgg16.txt`
+
+```bash
+python3 train_vgg16.py
 ```
 
 ## 🥷🏻 Ninja Tech
