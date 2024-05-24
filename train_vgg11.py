@@ -13,7 +13,7 @@ print(f'Current Device : {device}')
 
 if __name__=="__main__":
 	# ======================HyperParameter=====================
-	EPOCH=1
+	EPOCH=80
 	BATCH_SIZE=4
 	LR=0.01
 	MOMENTUM=0.9

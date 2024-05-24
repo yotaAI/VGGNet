@@ -14,7 +14,7 @@ print(f'Current Device : {device}')
 if __name__=='__main__':
 	#======================Hyper Parameter=================
 	vgg_11_path = 'vgg_11/vgg11_e0.pt'
-	EPOCH=1
+	EPOCH=80
 	BATCH_SIZE=4
 	LR=0.01
 	MOMENTUM=0.9
