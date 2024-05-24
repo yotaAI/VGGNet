@@ -23,7 +23,7 @@ vgg_a_architecture = [
 ]
 
 class VGG(nn.Module):
-	def __init__(self,in_channel,architecture):
+	def __init__(self,in_channel,num_classes,architecture):
 		super().__init__()
 		self.conv_layers = nn.Sequential()
 		self.in_channel=in_channel
@@ -42,15 +42,18 @@ class VGG(nn.Module):
 		self.fc = nn.Sequential(
 			nn.Flatten(),
 			nn.Linear(25088,4096),
+			nn.Dropout(p=0.5),
 			nn.Linear(4096,4096),
-			nn.Linear(4096,1000),
+			nn.Dropout(p=0.5),
+			nn.Linear(4096,num_classes),
 			nn.ReLU(),
+
 			)
 
 	def forward(self,x):
-		return self.fc(self.conv_layers(x))
+		return torch.argmax(self.fc(self.conv_layers(x)),dim=1)
 
+if __name__=='__main__':
+	vgg11 = VGG(3,1000,vgg_a_architecture)
 
-vgg11 = VGG(3,vgg_a_architecture)
-
-print(summary(vgg11,(3,224,224)))	
+	print(summary(vgg11,(3,224,224)))	
