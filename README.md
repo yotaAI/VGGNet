@@ -17,7 +17,7 @@ The model owner created 3 different models for VGGNet
 
 ✏️ Previously I was implementing the training setup of VGG11 model with randomly initialized weights.
 
-✏️ To Initialize the model's weight with Normal Distribution with `0` mean and `$\10^-2` variance and bias with `0` we have to `init_weights()` the `VGG Model.`
+✏️ To Initialize the model's weight with Normal Distribution with `0` mean and `$\10^-2\$` variance and bias with `0` we have to `init_weights()` the `VGG Model.`
 
 ✏️ As mentioned in the paper the larger of models `VGG13 VGG16 VGG19` are initialized from `Trained VGG11`.
  
