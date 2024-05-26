@@ -15,11 +15,11 @@ The model owner created 3 different models for VGGNet
 `📍VGG16 : 16 Weights`
 `📍VGG19 : 19 Weights`
 
-✏️ Previously I was implementing the training setup of VGG11 model with randomly initialized weights.
-
-✏️ To Initialize the model's weight with Normal Distribution with `0` mean and `10^-2` variance and bias with `0` we have to `init_weights()` the `VGG Model.`
+✏️ Previously I was implementing the training setup of VGG11 model with randomly initialized weights Currently I am initializaing model's weight with Normal Distribution with `0` mean and `10^-2` variance and bias with `0`.
 
 ✏️ As mentioned in the paper the larger of models `VGG13 VGG16 VGG19` are initialized from `Trained VGG11`.
+
+✏️ Or we can train them directly with normal distribution of weights.
  
 
 ## 🗃️ Dataset
@@ -39,40 +39,21 @@ The model owner created 3 different models for VGGNet
 🗞️As described in paper[Page 4] The model is first trained on dataset of `Scale=256`  then the pretrained model is again trained on `Scale=384` with `Learning Rate = 10^-3`.
 
 
-## 🤖 Training VGG11
+## 🤖 Training VGG
 
-🏷️ Before Starting Training  Check the `HyperParameter` section of `train_vgg11.py`.
-
-🏷️ Now run the `train_vgg11.py` and Boom!🤯
-
-🏷️ Training Loss will be calculated in `loss_vgg11.txt`
-
-🏷️ Model will be saved in the path mentioned in the `HyperParamet` section of the script.
-
-🏷️ The `first conv layer` and `last fully connected layers` of `VGG16` will be taken from trained `VGG11` model. 
-
+🏷️ Now run the `training.py` and Boom!🤯
 ```bash
-python3 train_vgg11.py
+        python3 training.py -m VGG11 -mp ./vgg_11/ -l loss_vgg11.txt
 ```
 
-## 🤖 Training VGG16
+🏷️ Model will be saved in the path you mentiond in `-mp`.
 
-🏷️ Before Starting Training  Check the `HyperParameter` section of `train_vgg16.py`.
+🏷️ for more details you can check `python3 training.py --help`
 
-🏷️ If you are frashly training the model, you have to first Pretrained `VGG11`.
 
-🏷️ Provide the path of the trained `VGG11` model in `vgg_11_path` of `train_vgg16.py`
-
-🏷️ Now run the `train_vgg16.py` and Boom!🤯
-
-🏷️ Training Loss will be calculated in `loss_vgg16.txt`
-
-```bash
-python3 train_vgg16.py
-```
 
 ## 🥷🏻 Ninja Tech
 
-⚡︎ Machine Learning ⚡︎ Deep Learning ⚡︎ CNN ⚡︎
+⚡︎ Machine Learning ⚡︎ Deep Learning ⚡︎ CNN ⚡︎
 
 

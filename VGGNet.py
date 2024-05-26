@@ -22,6 +22,72 @@ vgg_a_architecture = [
 
 ]
 
+vgg_b_architecture = [
+	('conv',  64, (3,3), 1, 'same'), #[layer,out_channel,kernel_size,stride,padding]
+	('conv',  64, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 128, (3,3), 1, 'same'),
+	('conv', 128, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 256, (3,3), 1, 'same'),
+	('conv', 256, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	'maxpool'
+
+]
+
+vgg_c_architecture = [
+	('conv',  64, (3,3), 1, 'same'), #[layer,out_channel,kernel_size,stride,padding]
+	('conv',  64, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 128, (3,3), 1, 'same'),
+	('conv', 128, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 256, (3,3), 1, 'same'),
+	('conv', 256, (3,3), 1, 'same'),
+	('conv', 256, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	'maxpool'
+
+]
+
+vgg_d_architecture = [
+	('conv',  64, (3,3), 1, 'same'), #[layer,out_channel,kernel_size,stride,padding]
+	('conv',  64, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 128, (3,3), 1, 'same'),
+	('conv', 128, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 256, (3,3), 1, 'same'),
+	('conv', 256, (3,3), 1, 'same'),
+	('conv', 256, (3,3), 1, 'same'),
+	('conv', 256, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	'maxpool',
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	('conv', 512, (3,3), 1, 'same'),
+	'maxpool'
+
+]
+
 class VGG(nn.Module):
 	def __init__(self,in_channel,num_classes,architecture):
 		super().__init__()
@@ -48,12 +114,14 @@ class VGG(nn.Module):
 			nn.Dropout(p=0.5),
 			nn.Linear(4096,num_classes),
 			nn.Dropout(p=0.5),
-			nn.ReLU(),
+			nn.Softmax(dim=1),
 
 			)
+		#Initializing weights with normal distribution.
+		self.init_weights()
 
 	def forward(self,x):
-		return torch.argmax(self.fc(self.conv_layers(x)),dim=1)
+		return self.fc(self.conv_layers(x)) #[batch_size,num_classes]
 
 	def init_weights(self):
 		for layer in self.conv_layers:
@@ -61,8 +129,8 @@ class VGG(nn.Module):
 				nn.init.normal_(layer.weight,std=0.1)
 				nn.init.constant_(layer.bias,0)
 
+
 if __name__=='__main__':
 	vgg11 = VGG(3,1000,vgg_a_architecture)
-	vgg11.init_weights()
-
 	print(summary(vgg11,(3,224,224)))	
+	print(vgg11(torch.rand(16,3,224,224)))
