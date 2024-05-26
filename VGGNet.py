@@ -109,8 +109,10 @@ class VGG(nn.Module):
 		self.fc = nn.Sequential(
 			nn.Flatten(),
 			nn.Linear(25088,4096),
+			nn.ReLU(),
 			nn.Dropout(p=0.5),
 			nn.Linear(4096,4096),
+			nn.ReLU(),
 			nn.Dropout(p=0.5),
 			nn.Linear(4096,num_classes),
 			nn.Dropout(p=0.5),

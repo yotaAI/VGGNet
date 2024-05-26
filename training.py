@@ -61,8 +61,9 @@ if __name__=="__main__":
 		vgg= VGG(in_channel=3,num_classes=5,architecture=vgg_d_architecture).to(device)
 	
 	#----------------------Loding Loss and Optimizer--------------------
-	eucladian_loss=EucladianLoss()
-	classification_loss=ClassificationLoss()
+	# eucladian_loss=EucladianLoss()
+	# classification_loss=ClassificationLoss()
+	cross_entropy_loss = nn.CrossEntropyLoss()
 	optimizer = torch.optim.SGD(vgg.parameters(),lr=LR,momentum=MOMENTUM,weight_decay=L2_REG)
 	
 	#----------------------Loding Pretrained Model--------------------
@@ -82,7 +83,7 @@ if __name__=="__main__":
 			pass
 
 	#----------------------Loding Dataset --------------------
-	flower_dataset = FlowerDataset(dataset_path,input_shape=INPUT_SHAPE,labels_map=labels_map)
+	flower_dataset = FlowerDataset(dataset_path,input_shape=INPUT_SHAPE,labels_map=labels_map,num_class=len(labels_map))
 	training_loader = torch.utils.data.DataLoader(flower_dataset,batch_size=BATCH_SIZE,shuffle=True)
 
 
@@ -97,8 +98,9 @@ if __name__=="__main__":
 
 			optimizer.zero_grad()
 			outputs = vgg(inputs)
-
-			loss = classification_loss(outputs,labels)
+			# print(outputs,labels)
+			# break
+			loss = cross_entropy_loss(outputs,labels)
 
 			loss.backward()
 
@@ -106,10 +108,11 @@ if __name__=="__main__":
 
 			current_loss +=loss.item()
 	#----------------------Loss Printing --------------------
-			# if i%5==0:
-				# print("Loss :",loss.item())
-		with open(loss_path,'a+') as loss_file:
-			loss_file.write(str(current_loss/len(training_loader))+'\n')
+			if i!=0 and i%50==0:
+				print("Loss :",loss.item())
+				with open(loss_path,'a+') as loss_file:
+					# loss_file.write(str(current_loss/len(training_loader))+'\n')
+					loss_file.write(str(current_loss/i)+'\n')
 
 	#----------------------Saving Model --------------------
 		if epoch%5==0:

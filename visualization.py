@@ -1,7 +1,7 @@
 import os,sys
 import matplotlib.pyplot as plt
 #---------------Loss File---------------
-LOSS_FILE="./vgg_11loss.txt"
+LOSS_FILE="./loss_vgg11.txt"
 
 with open(LOSS_FILE,'r') as l:
 	losses = l.readlines()

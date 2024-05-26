@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision
+import torch.nn.functional as F
 from torch.utils.data import Dataset
 import pandas as pd
 import cv2
@@ -8,10 +9,11 @@ import os,sys
 import numpy as np
 
 class FlowerDataset(Dataset):
-	def __init__(self,dataset_path,input_shape,labels_map,scale=256):
+	def __init__(self,dataset_path,input_shape,labels_map,scale=256,num_class=5):
 		super().__init__()
 		self.input_shape=input_shape
 		self.scale=scale
+		self.num_class=num_class
 		images = []
 		for key in labels_map.keys():
 			for image in os.listdir(os.path.join(dataset_path,labels_map[key])):
@@ -30,5 +32,6 @@ class FlowerDataset(Dataset):
 		im = im/self.scale
 		# cv2.imshow("Image",im)
 		# cv2.waitKey(0)
+		clas = F.one_hot(torch.tensor(clas), num_classes=self.num_class).to(torch.float32)
 
 		return im,clas
