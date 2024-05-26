@@ -43,7 +43,7 @@ The model owner created 3 different models for VGGNet
 
 🏷️ Now run the `training.py` and Boom!🤯
 ```bash
-        python3 training.py -m VGG11 -mp ./vgg_11/ -l loss_vgg11.txt
+python3 training.py -m VGG11 -mp ./vgg_11/ -l loss_vgg11.txt
 ```
 
 🏷️ Model will be saved in the path you mentiond in `-mp`.
