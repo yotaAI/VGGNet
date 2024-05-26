@@ -15,7 +15,7 @@ if __name__=="__main__":
 	# ======================HyperParameter=====================
 	EPOCH=80
 	BATCH_SIZE=4
-	LR=0.01
+	LR=0.001
 	MOMENTUM=0.9
 	L2_REG = 5e-4
 	dataset_path = "./dataset/train/"
@@ -29,13 +29,13 @@ if __name__=="__main__":
 	}
 	loss_path="vgg_11loss.txt"
 	model_path = './vgg_11/'
-	pre_tained_model=None
+	pre_tained_model='./vgg_11/vgg11_e3.pt'
 	#==========================================================
 
 	os.makedirs(model_path,exist_ok=True)
 	#Clean the file
-	with open(loss_path,'w+') as loss_file:
-		pass
+	# with open(loss_path,'w+') as loss_file:
+	# 	pass
 
 	curr_epoch=0
 
@@ -54,8 +54,8 @@ if __name__=="__main__":
 		checkpoint = torch.load(pre_tained_model)
 		vgg11.load_state_dict(checkpoint['model'])
 		optimizer.load_state_dict(checkpoint['optimizer'])
-		curr_epoch=checkpoint['epoch']
-
+		curr_epoch=checkpoint['epoch'] + 1
+		print(f"Current Epoch : {curr_epoch}")
 	# DataSet
 	flower_dataset = FlowerDataset(dataset_path,input_shape=INPUT_SHAPE,labels_map=labels_map)
 	# Dataloader
@@ -80,15 +80,15 @@ if __name__=="__main__":
 
 			current_loss +=loss.item()
 
-			if i!=0 and i%50==0:
-				with open(loss_path,'a+') as loss_file:
-					loss_file.write(str(current_loss/i)+'\n')
+		with open(loss_path,'a+') as loss_file:
+			loss_file.write(str(current_loss/len(training_loader))+'\n')
 		
 		#Save Model
-		state_dict = {
-			'epoch':epoch,
-			'model' : vgg11.state_dict(),
-			'optimizer': optimizer.state_dict(),
+		if epoch%5==0:
+			state_dict = {
+				'epoch':epoch,
+				'model' : vgg11.state_dict(),
+				'optimizer': optimizer.state_dict(),
 
-		}
-		torch.save(state_dict,os.path.join(model_path,f'vgg11_e{epoch}.pt'))
+			}
+			torch.save(state_dict,os.path.join(model_path,f'vgg11_e{epoch}.pt'))
