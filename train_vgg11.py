@@ -17,6 +17,7 @@ if __name__=="__main__":
 	BATCH_SIZE=4
 	LR=0.01
 	MOMENTUM=0.9
+	L2_REG = 5e-4
 	dataset_path = "./dataset/train/"
 	INPUT_SHAPE = (224,224)
 	labels_map = {
@@ -28,6 +29,7 @@ if __name__=="__main__":
 	}
 	loss_path="vgg_11loss.txt"
 	model_path = './vgg_11/'
+	pre_tained_model=None
 	#==========================================================
 
 	os.makedirs(model_path,exist_ok=True)
@@ -40,15 +42,16 @@ if __name__=="__main__":
 
 	# Model Load
 	vgg11 = VGG(in_channel=3,num_classes=5,architecture=vgg_a_architecture).to(device)
+	vgg11.init_weights()		#Initialize the weights with Gausan Distrubution.
 	# print(summary(vgg11,(3,224,224)))	
 	# Loss Function
 	eucladian_loss=EucladianLoss()
 	# Optimizer
-	optimizer = torch.optim.SGD(vgg11.parameters(),lr=LR,momentum=MOMENTUM)
+	optimizer = torch.optim.SGD(vgg11.parameters(),lr=LR,momentum=MOMENTUM,weight_decay=L2_REG)
 	#Loading model if exist
-	if len(os.listdir(model_path))!=0:
+	if pre_tained_model is not None and  os.path.isfile(pre_tained_model):
 		print("Loading Pretrained Model .....")
-		checkpoint = torch.load(os.path.join(model_path,f'vgg11_e{len(os.listdir(model_path)) -1 }.pt'))
+		checkpoint = torch.load(pre_tained_model)
 		vgg11.load_state_dict(checkpoint['model'])
 		optimizer.load_state_dict(checkpoint['optimizer'])
 		curr_epoch=checkpoint['epoch']

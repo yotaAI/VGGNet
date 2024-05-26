@@ -8,9 +8,10 @@ import os,sys
 import numpy as np
 
 class FlowerDataset(Dataset):
-	def __init__(self,dataset_path,input_shape,labels_map):
+	def __init__(self,dataset_path,input_shape,labels_map,scale=256):
 		super().__init__()
 		self.input_shape=input_shape
+		self.scale=scale
 		images = []
 		for key in labels_map.keys():
 			for image in os.listdir(os.path.join(dataset_path,labels_map[key])):
@@ -26,6 +27,7 @@ class FlowerDataset(Dataset):
 		im = cv2.imread(img)
 		im = cv2.resize(im,self.input_shape)
 		im = np.transpose(im,(2,0,1)).astype(np.float32)
+		im = im/self.scale
 		# cv2.imshow("Image",im)
 		# cv2.waitKey(0)
 

@@ -15,7 +15,9 @@ The model owner created 3 different models for VGGNet
 `📍VGG16 : 16 Weights`
 `📍VGG19 : 19 Weights`
 
-✏️ Currently I am implementing the training setup of VGG11 model with randomly initialized weights.
+✏️ Previously I was implementing the training setup of VGG11 model with randomly initialized weights.
+
+✏️ To Initialize the model's weight with Normal Distribution with `0` mean and `$\10^-2` variance and bias with `0` we have to `init_weights()` the `VGG Model.`
 
 ✏️ As mentioned in the paper the larger of models `VGG13 VGG16 VGG19` are initialized from `Trained VGG11`.
  
@@ -33,6 +35,8 @@ The model owner created 3 different models for VGGNet
         🌼 tulip
         🌼 dandelion
         🌼 sunflower
+
+🗞️As described in paper[Page 4] The model is first trained on dataset of `Scale=256`  then the pretrained model is again trained on `Scale=384` with `Learning Rate = 10^-3`.
 
 
 ## 🤖 Training VGG11

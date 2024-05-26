@@ -17,6 +17,7 @@ if __name__=='__main__':
 	EPOCH=80
 	BATCH_SIZE=4
 	LR=0.01
+	L2_REG = 5e-4
 	MOMENTUM=0.9
 	dataset_path = "./dataset/train/"
 	INPUT_SHAPE = (224,224)
@@ -47,7 +48,7 @@ if __name__=='__main__':
 	# Loss Function
 	eucladian_loss=EucladianLoss()
 	# Optimizer
-	optimizer = torch.optim.SGD(vgg16.parameters(),lr=LR,momentum=MOMENTUM)
+	optimizer = torch.optim.SGD(vgg16.parameters(),lr=LR,momentum=MOMENTUM, weight_decay=L2_REG)
 	
 	if not LOAD_FROM_STATEDICT:
 		vgg16_dict = vgg16.state_dict()
@@ -66,7 +67,7 @@ if __name__=='__main__':
 
 		vgg16.load_state_dict(vgg16_dict)
 
-	else:
+	else if os.path.isfile(vgg_11_path:
 		if len(os.listdir(model_path))!=0:
 			print("Loading Pretrained Model .....")
 			checkpoint = torch.load(os.path.join(model_path,f'vgg16_e{len(os.listdir(model_path))}.pt'))

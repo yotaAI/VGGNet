@@ -33,6 +33,7 @@ class VGG(nn.Module):
 				name,out_channel,kernel,stride,padding=layer
 				
 				self.conv_layers.append(nn.Conv2d(in_channel,out_channel,kernel,stride,padding))
+				self.conv_layers.append(nn.ReLU())
 
 				in_channel=out_channel
 
@@ -46,6 +47,7 @@ class VGG(nn.Module):
 			nn.Linear(4096,4096),
 			nn.Dropout(p=0.5),
 			nn.Linear(4096,num_classes),
+			nn.Dropout(p=0.5),
 			nn.ReLU(),
 
 			)
@@ -53,7 +55,14 @@ class VGG(nn.Module):
 	def forward(self,x):
 		return torch.argmax(self.fc(self.conv_layers(x)),dim=1)
 
+	def init_weights(self):
+		for layer in self.conv_layers:
+			if isinstance(layer,nn.Conv2d):
+				nn.init.normal_(layer.weight,std=0.1)
+				nn.init.constant_(layer.bias,0)
+
 if __name__=='__main__':
 	vgg11 = VGG(3,1000,vgg_a_architecture)
+	vgg11.init_weights()
 
 	print(summary(vgg11,(3,224,224)))	
