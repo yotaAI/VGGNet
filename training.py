@@ -62,15 +62,13 @@ if __name__=="__main__":
 		vgg= VGG(in_channel=3,num_classes=num_classes,architecture=vgg_d_architecture).to(device)
 	
 	summary(vgg,(3,224,2224))
+
 	#----------------------Loding Loss and Optimizer--------------------
-	# eucladian_loss=EucladianLoss()
-	# classification_loss=ClassificationLoss()
 	cross_entropy_loss = nn.CrossEntropyLoss()
 	optimizer = torch.optim.SGD(vgg.parameters(),lr=LR,momentum=MOMENTUM,weight_decay=L2_REG)
 	
 	#----------------------Loding Pretrained Model--------------------
 	if pre_tained_model is not None and  os.path.isfile(pre_tained_model):
-
 		print("Loading Pretrained Model .....")
 		checkpoint = torch.load(pre_tained_model)
 		if checkpoint['model_name']!=args.model:
@@ -85,8 +83,6 @@ if __name__=="__main__":
 			pass
 
 	#----------------------Loding Dataset --------------------
-	# flower_dataset = FlowerDataset(dataset_path,input_shape=INPUT_SHAPE,labels_map=labels_map,num_class=len(labels_map))
-	# training_loader = torch.utils.data.DataLoader(flower_dataset,batch_size=BATCH_SIZE,shuffle=True)
 
 	imagenet_dataset = ImageNetDataset(dataset_path,INPUT_SHAPE,scale,num_classes,'train')
 	training_loader  = torch.utils.data.DataLoader(imagenet_dataset,batch_size=BATCH_SIZE,shuffle=True)
