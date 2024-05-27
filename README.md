@@ -24,17 +24,7 @@ The model owner created 3 different models for VGGNet
 
 ## 🗃️ Dataset
 
-🗞️ For Learning Purpose I am using [Flower Dataset](https://www.kaggle.com/datasets/alxmamaev/flowers-recognition#).
-
-🗞️ Keep the Flower Datset inside `./dataset`.
-
-🗞️ Dataset is having : 
-        
-        🌼 daisy
-        🌼 rose
-        🌼 tulip
-        🌼 dandelion
-        🌼 sunflower
+🗞️ Training on Imagenet Dataset with 1000 classes. For dataset [Click](https://www.image-net.org/challenges/LSVRC/index.php).
 
 🗞️As described in paper[Page 4] The model is first trained on dataset of `Scale=256`  then the pretrained model is again trained on `Scale=384` with `Learning Rate = 10^-3`.
 
@@ -43,7 +33,7 @@ The model owner created 3 different models for VGGNet
 
 🏷️ Now run the `training.py` and Boom!🤯
 ```bash
-python3 training.py -m VGG11 -mp ./vgg_11/ -l loss_vgg11.txt
+python3 training.py -m VGG16 -mp ./vgg_16/ -l loss_vgg16.txt -e 100 -b 64 -lr 0.001
 ```
 
 🏷️ Model will be saved in the path you mentiond in `-mp`.
