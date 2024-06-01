@@ -64,60 +64,90 @@ if __name__=="__main__":
 	summary(vgg,(3,224,2224))
 
 	#----------------------Loding Loss and Optimizer--------------------
-	cross_entropy_loss = nn.CrossEntropyLoss()
+	loss_fn = nn.CrossEntropyLoss()
 	optimizer = torch.optim.SGD(vgg.parameters(),lr=LR,momentum=MOMENTUM,weight_decay=L2_REG)
+	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,'min',0.1,2)
 	
-	#----------------------Loding Pretrained Model--------------------
-	if pre_tained_model is not None and  os.path.isfile(pre_tained_model):
-		print("Loading Pretrained Model .....")
-		checkpoint = torch.load(pre_tained_model)
-		if checkpoint['model_name']!=args.model:
-			raise Exception(f"Trained Model is {checkpoint['model_name']} and you are loading for {args.model}")
-		
+	train_dataset = ImageNetDataset(dataset_path,dataset_type='train')
+	train_loader = torch.utils.data.DataLoader(train_dataset,batch_size=BATCH_SIZE,shuffle=True)
+
+	test_dataset = ImageNetDataset(dataset_path,dataset_type='test')
+	test_loader = torch.utils.data.DataLoader(test_dataset,batch_size=1,shuffle=False)
+
+	if pretrained_model!=None:
+		checkpoint=torch.load(pretrained_model)
 		vgg.load_state_dict(checkpoint['model'])
 		optimizer.load_state_dict(checkpoint['optimizer'])
-		curr_epoch=checkpoint['epoch'] + 1
-		print(f"Pretraine Model Epoch : {curr_epoch	}")
-	else:
-		with open(loss_path,'w+') as loss_file:
-			pass
+		curr_epoch = checkpoint['epoch']
+		print(f'Pretrained Epoch : {curr_epoch}')
+		optimizer.param_groups[0]['lr'] = LR
 
-	#----------------------Loding Dataset --------------------
+	total_loss = []
+	total_accuracy = []
 
-	imagenet_dataset = ImageNetDataset(dataset_path,INPUT_SHAPE,scale,num_classes,'train')
-	training_loader  = torch.utils.data.DataLoader(imagenet_dataset,batch_size=BATCH_SIZE,shuffle=True)
-
-	#----------------------Training Loop --------------------
-	for epoch in range(curr_epoch,EPOCH):
-		print(f"Current Epoch : {epoch	}")
+	for epoch in range(curr_epoch+1,EPOCH):
 		current_loss = []
-		for i, data in enumerate(tqdm(training_loader)):
-			inputs,labels = data
-			inputs =inputs.to(device)
-			labels = labels.to(device)
-			outputs = vgg(inputs)
-			loss = cross_entropy_loss(outputs,labels)
+		current_accuracy = []
 
+		with tqdm(training_loader,ncols=150) as tepoch:
+			for i,data in enumerate(tepoch):
+				vgg.train()
+				inputs,labels = data
+				inputs = inputs.to(device)
+				labels = labels.to(device)
 
-			optimizer.zero_grad()
-			loss.backward()
-			optimizer.step()
+				output = vgg(inputs)
 
-			current_loss.append(loss.item())
-	#----------------------Loss Printing --------------------
-		
-		print("Loss :",sum(current_loss)/len(current_loss))
-		with open(loss_path,'a+') as loss_file:
-			# loss_file.write(str(current_loss/len(training_loader))+'\n')
-			loss_file.write(str(sum(current_loss)/len(current_loss))+'\n')
+				loss = loss_fn(output,labels)
+				current_loss.append(loss.item())
+				optimizer.zero_Grad()
+				loss.backward()
+				optimizer.step()
 
-	#----------------------Saving Model --------------------
-		if epoch%5==0:
-			state_dict = {
-				'model_name': args.model,
-				'epoch':epoch,
-				'model' : vgg.state_dict(),
-				'optimizer': optimizer.state_dict(),
+				with torch.no_grad():
+					accuracy = accuracy_calculate(labels,output)/BATCH_SIZE
+					current_accuracy.append(accuracy)
 
-			}
-			torch.save(state_dict,os.path.join(model_path,f'{args.model}_e{epoch}.pt'))
+					if i%calc==0 and i>=calc:
+						tepoch.set_description(f'EP {epoch}')
+						tepoch.set_postfix(Loss = loss.item(), A = f'{accuracy:.4f}', LR = optimizer.param_groups[0]['lr'])
+
+						if loss.item()==float('nan'):
+							exit(0)
+
+			with torch.no_grad():
+				total_loss.append(np.average(current_loss))
+				total_accuracy.append(np.average(torch.tensor(current_accuracy).cpu()))
+
+				#======================== Testing==================
+
+				test_accuracy = []
+				test_loss = []
+				vgg.eval()
+
+				for (X_test,y_test) in tqdm(test_loader):
+					pred = vgg(X_test.to(device))
+					pred = pred.cpu()
+					test_loss.append(loss_fn(pred,y_test))
+					test_accuracy.append(accuracy_calculate(y_test,pred))
+
+				total_test_loss = np.average(test_loss)
+				total_test_accuracy = np.average(test_accuracy)
+
+				print(f'Test Loss : {total_test_loss} Accuracy : {total_test_accuracy}')
+
+				#===================== Scheduler ===================
+				scheduler.step(total_test_loss)
+				LR = optimizer.param_groups[0]['lr']
+
+			with open(loss_path,'a+') as l:
+				l.write(f'Epoch : {epoch} LR : {LR} LOSS : {np.average(current_loss)} Accuracy : {np.average(torch.tensor(current_accuracy).cpu())} Test Loss : {total_test_loss} Test Accuracy : {total_test_accuracy}\n')
+		state_dict {
+		'model_name' : args.model,
+		'epoch' : epoch,
+		'model' : vgg.state_dict(),
+		'optimizer' : optimizer.state_dict(),
+		}
+
+		torch.save(state_dict,os.path.join(model_path,f'final_model.pt'))
+		print('Model Saved . . .')
