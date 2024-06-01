@@ -20,6 +20,10 @@ The model owner created 3 different models for VGGNet
 ✏️ As mentioned in the paper the larger of models `VGG13 VGG16 VGG19` are initialized from `Trained VGG11`.
 
 ✏️ Or we can train them directly with normal distribution of weights.
+
+✏️ I have added a Scheduler for decreasing learning rate by 10 when loss reaches saturation.
+
+✏️ For Learning purpose I have initialized model on Random weights.
  
 
 ## 🗃️ Dataset
