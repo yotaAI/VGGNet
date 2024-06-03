@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
-from sklearn.model_selection import train_teset_split
+from sklearn.model_selection import train_test_split
 
 
 import cv2
@@ -11,31 +11,31 @@ import os
 
 
 class ImageNetDataset(Dataset):
-	def __init__(self,dataset_path='../dataset/imagenet/',input_shape=(224,224),scale=225,num_classes = 1000,dataset_type='train'):
+	def __init__(self,dataset_path='../dataset/imagenet/',input_shape=(224,224),scale=255,num_classes = 1000,dataset_type='train'):
 		super().__init__()
-		self.sinput_shape=input_shape
+		self.input_shape=input_shape
 		self.scale=scale
 		self.num_classes = num_classes
-		synsets_path='synsets.txt'
-		labels_path = 'labels.txt'
+		synsets_path="synsets.txt"
+		labels_path = "labels.txt"
 
 		with open(os.path.join(dataset_path,synsets_path),'r') as f:
 			synsets = [i.strip() for i in f.readlines()]
 
 		with open(os.path.join(dataset_path,labels_path),'r') as f:
 			label = [i.strip().split(':') for i in f.readlines()]
-			labels = [[synsets[n],int(ids) - 1,clss] for n,(ids,clss) in enumerate(label)]
+			labels = [[synsets[n],int(ids) - 1,cls] for n,(ids,cls) in enumerate(label)]
 			self.map = dict(label)
-
-		for (folder,ids,cass) in labels:
-			daatset +=[[os.path.join(dataset_path,'train',folder,file),ids,clss] for file in os.listdirs(os.path.join(datast_path,'train',folder))]
+		dataset = []
+		for (folder,ids,cls) in labels:
+			dataset +=[[os.path.join(dataset_path,'train',folder,file),ids,cls] for file in os.listdir(os.path.join(dataset_path,'train',folder))]
 
 		df = pd.DataFrame(dataset)
 		df.columns = ['File','ID','Class']
 
 		X = df["File"].to_list()
 		Y = df["ID"].to_list()
-		X_train,X_test,y_train,y_test = train_teset_split(X,Y,test_size=0.01,random_state=4)
+		X_train,X_test,y_train,y_test = train_test_split(X,Y,test_size=0.01,random_state=4)
 
 		if dataset_type=='train':
 			self.X = X_train
@@ -57,7 +57,7 @@ class ImageNetDataset(Dataset):
 		img = cv2.imread(X)
 		img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 		img = cv2.resize(img,(224,224))
-		img = img.transpose(2,0,1)
+		img = img.transpose((2,0,1))
 		img = img /self.scale
 		img = torch.from_numpy(img).to(torch.float32)
 
